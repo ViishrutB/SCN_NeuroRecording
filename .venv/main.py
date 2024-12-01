@@ -6,10 +6,10 @@ import os
 import scipy.io
 from pandas import concat
 from tabulate import tabulate as tb
+import matplotlib.pyplot as plt
 
 # Reading Columns of CSV/XLSX Files
 def read_columns(files):
-    """Reads columns of XLSX/CSV files when supplied with a files"""
     df_combined = pd.DataFrame()
     for file in files:
 
@@ -23,7 +23,6 @@ def read_columns(files):
 
 # Reading data from the folder structure
 def read_files(folder_path):
-    """ Reads files in the folder when supplied with a folder_path"""
     file_list = []
     file_data = pd.DataFrame()
 
@@ -34,6 +33,53 @@ def read_files(folder_path):
     file_data = read_columns(file_list)
 
     return file_data
+
+def forced_locomotion(AI03_ts, AI03_val, AI02_ts, AI02_val):
+    # ... (similar preprocessing as in MATLAB)
+
+    # Compute Smoothed Velocity
+    movTime = AI03_val
+    onset_sec = np.where(np.diff(movTime) == 1)[0] / 5000
+    offset_sec = np.where(np.diff(movTime) == -1)[0] / 5000
+
+    # ... (similar processing for AI02_val)
+
+    # ... (plotting and other analysis steps, similar to MATLAB)
+
+    # Calculate movement binary
+    movbin = np.zeros_like(time_all)
+    movind = np.where(vel_cms > 0.1)[0]
+    movbin[movind] = 1
+
+    onset_mov = np.where(np.diff(movbin) == 1)[0] / 20000
+    offset_mov = np.where(np.diff(movbin) == -1)[0] / 20000
+
+    return onset_mov, offset_mov
+
+def plot_fr(ts, start, fin):
+    prerate = []
+    boutrate = []
+    postrate = []
+
+    for i in range(len(start)):
+        pre_spikerate = ts[(ts > start[i] - 1) & (ts < start[i])]
+        bout_spikerate = ts[(ts > start[i]) & (ts < fin[i])]
+        post_spikerate = ts[(ts > fin[i]) & (ts < fin[i] + 1)]
+
+        plt.figure(figsize=(10, 10))
+        plt.subplot(7, 6, i + 1)  # Adjust subplot layout as needed
+        plt.hist(pre_spikerate, bins=np.arange(min(ts), max(ts) + 0.1, 0.1), alpha=0.5)
+        plt.hist(bout_spikerate, bins=np.arange(min(ts), max(ts) + 0.1, 0.1), alpha=0.5)
+        plt.hist(post_spikerate, bins=np.arange(min(ts), max(ts) + 0.1, 0.1), alpha=0.5)
+        plt.ylim(0, 10)
+
+        prerate.append(np.histogram(pre_spikerate, bins=np.arange(min(ts), max(ts) + 0.1, 0.1))[0])
+        boutrate.append(np.histogram(bout_spikerate, bins=np.arange(min(ts), max(ts) + 0.1, 0.1))[0])
+        postrate.append(np.histogram(post_spikerate, bins=np.arange(min(ts), max(ts) + 0.1, 0.1))[0])
+
+        plt.show()  # To display each subplot individually
+
+    return prerate, boutrate, postrate
 
 ## Code Usage
 
