@@ -86,7 +86,6 @@ def plot_fr(ts, start, fin):
 folder_path = r"E:\GittisLab_NeuralData"
 file_data = read_files(folder_path)
 
-# TODO (vishrutb@)
 
 # Read Files -> Read Columns -> Create a Singular Dataframe with all the SPK columns for all animals for all
 # trajectories -> Calculate movement onset and offset -> Calculate Metrics
